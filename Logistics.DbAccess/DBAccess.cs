@@ -17,8 +17,11 @@ namespace Logistics.DbAccess
 
         public void AddCity(string name)
         {
+            var id = Context.Cities.OrderByDescending(x => x.Id).Select(x => x.Id).FirstOrDefault();
+            id += 1;
             Context.Cities.Add(new Cities
             {
+                Id = id,
                 Name = name,
                 DateUpdated = DateTime.Now
             });
@@ -26,8 +29,11 @@ namespace Logistics.DbAccess
 
         public void AddLogisticsCenter(LogisticsCenterDTO lcenter)
         {
+            var id = Context.LogisticsCenters.OrderByDescending(x => x.Id).Select(x => x.Id).FirstOrDefault();
+            id += 1;
             Context.LogisticsCenters.Add(new LogisticsCenters
             {
+                Id = id,
                 CityId = lcenter.CityId,
                 DateUpdated = DateTime.Now
             });
@@ -35,8 +41,11 @@ namespace Logistics.DbAccess
 
         public void AddRout(int startId, int endId, decimal distance)
         {
+            var id = Context.Routes.OrderByDescending(x => x.Id).Select(x => x.Id).FirstOrDefault();
+            id += 1;
             Context.Routes.Add(new Routes
             {
+                Id = id,
                 StartCityId = startId,
                 EndCityId = endId,
                 DateUpdated = DateTime.Now,
@@ -75,6 +84,7 @@ namespace Logistics.DbAccess
             rout.StartCityId = routDto.StartCityId;
             rout.EndCityId = routDto.EndCityId;
             rout.DateUpdated = DateTime.Now;
+            rout.Distance = routDto.Distance;
         }
 
         public List<CityDTO> GetCities()
@@ -165,20 +175,20 @@ namespace Logistics.DbAccess
             var averageRoutesByStartCity = Context.Routes.GroupBy(x => x.StartCityId).Select(x => new CitiDistance()
             {
                 CityId = x.Key,
-                AverageDistance = (x.Select(y => y.Distance).Sum()) / x.Count()
+                AverageDistance = x.Sum(y => y.Distance)
             }).ToList();
 
             var averageRoutesByEndCity = Context.Routes.GroupBy(x => x.EndCityId).Select(x => new CitiDistance()
             {
                 CityId = x.Key,
-                AverageDistance = (x.Select(y => y.Distance).Sum()) / x.Count()
+                AverageDistance = x.Sum(y => y.Distance)
             }).ToList();
 
             averageRoutesByStartCity.AddRange(averageRoutesByEndCity);
             var averageDistances = averageRoutesByStartCity.GroupBy(x => x.CityId).Select(x => new CitiDistance()
             {
                 CityId = x.Key,
-                AverageDistance = x.Select(y => y.AverageDistance).Sum()
+                AverageDistance = x.Sum(y => y.AverageDistance)
             }).ToList();
 
             var mostDistantCity = averageDistances.OrderByDescending(x => x.AverageDistance).FirstOrDefault();
