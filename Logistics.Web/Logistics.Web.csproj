@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Logistics.Common\Logistics.Common.csproj" />
+    <ProjectReference Include="..\Logistics.DbAccess\Logistics.DbAccess.csproj" />
+  </ItemGroup>
+
+</Project>
